@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>FSPM • YouTube Search</title>
+    <style>
+        :root {
+            --bg: #0c1224;
+            --bg2: #0f1630;
+            --card: #121a35;
+            --text: #eaf0ff;
+            --muted: #9fb0df;
+            --border: #243159;
+            --accent: #5f8bff;
+            --accent-2: #3ed3a3;
+            --danger: #ff6b6b;
+            --shadow: 0 10px 30px rgba(0, 0, 0, .25);
+            --radius: 14px;
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg: #f3f6ff;
+                --bg2: #eef2ff;
+                --card: #fff;
+                --text: #0c1224;
+                --muted: #5e6fa4;
+                --border: #e6eafb;
+                --accent: #2f6bff;
+                --accent-2: #07a57b;
+                --danger: #ea5555;
+                --shadow: 0 10px 28px rgba(30, 48, 120, .08);
+            }
+        }
+
+        html, body {
+            height: 100%
+        }
+
+        body {
+            margin: 0;
+            background: linear-gradient(180deg, var(--bg), var(--bg2) 55%, var(--bg));
+            color: var(--text);
+            font: 16px/1.55 system-ui, -apple-system, Segoe UI, Roboto, Arial;
+        }
+        
+        .container {
+            width: min(1600px, calc(100vw - 32px));
+            margin: 32px auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .brand {
+            font-weight: 800;
+            letter-spacing: .3px;
+            font-size: 22px;
+        }
+
+        .brand b {
+            color: var(--accent)
+        }
+
+        .sub {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 18px;
+        }
+
+        .form {
+            display: grid;
+            grid-template-columns: 2fr .7fr .9fr auto;
+            gap: 12px;
+            align-items: end;
+        }
+
+        @media (max-width: 1100px) {
+            .form {
+                grid-template-columns: 1.3fr .6fr .7fr auto;
+            }
+        }
+
+        @media (max-width: 930px) {
+            .form {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+
+            .actions {
+                grid-column: 1 / -1;
+                justify-content: flex-end;
+            }
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        input[type="text"], input[type="number"] {
+            height: 46px;
+            width: 100%;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, .04);
+            color: var(--text);
+            padding: 0 14px;
+            outline: none;
+        }
+
+        input::placeholder {
+            color: #9aa7d6
+        }
+
+        .chk {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            height: 46px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0 14px;
+            background: rgba(255, 255, 255, .04);
+        }
+
+        .btn {
+            height: 46px;
+            padding: 0 18px;
+            border-radius: 12px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            font-weight: 700;
+            letter-spacing: .2px;
+            background: #1a2858;
+            color: #fff;
+            white-space: nowrap;
+        }
+
+        .btn.primary {
+            background: var(--accent)
+        }
+
+        .btn.success {
+            background: var(--accent-2);
+            color: #06241a
+        }
+
+        .btn.danger {
+            background: var(--danger)
+        }
+
+        .btn.ghost {
+            background: transparent;
+            border-color: var(--border);
+            color: var(--text)
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .note {
+            margin-top: 10px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        h2 {
+            margin: 0 0 12px;
+            font-size: 18px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        @media (max-width: 980px) {
+            .grid {
+                grid-template-columns: 1fr
+            }
+        }
+
+        .table-wrap {
+            overflow: auto; /* симетричні відступи + скрол за потреби */
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: auto;
+            background: rgba(255, 255, 255, .02);
+            font-size: 15px;
+            line-height: 1.45;
+        }
+
+        th, td {
+            padding: 14px 16px;
+        }
+
+        th {
+            white-space: nowrap;
+        }
+
+        td:nth-child(2) {
+            width: 35%;
+        }
+        
+        td:nth-child(3) {
+            width: 20%;
+        }
+        
+        td:nth-child(4) {
+            width: 18%;
+        }
+        
+        td:nth-child(1), td:nth-child(5) {
+            width: auto;
+        }
+
+        tbody tr:nth-child(even) td {
+            background: rgba(255, 255, 255, .025);
+        }
+
+        tr:hover td {
+            background: rgba(95, 139, 255, .08);
+        }
+
+        .empty {
+            padding: 24px;
+            color: var(--muted);
+            text-align: center;
+        }
+
+        a.link {
+            color: var(--accent);
+            text-decoration: none
+        }
+
+        a.link:hover {
+            text-decoration: underline
+        }
+
+        .status {
+            margin-left: 10px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .ok {
+            color: var(--accent-2)
+        }
+
+        .err {
+            color: var(--danger)
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="brand"><b>FSPM</b> • YouTube Search</div>
+        <div class="sub">ASP.NET Core • EF Core • PostgreSQL</div>
+    </div>
+
+    <div class="card">
+        <div class="form">
+            <div>
+                <label for="q">Пошуковий запит (q)</label>
+                <input id="q" type="text" placeholder="напр.: dotnet conf, jazz mix, python tutorial"/>
+            </div>
+            <div>
+                <label for="max">maxResults (1–50)</label>
+                <input id="max" type="number" min="1" max="50" value="10"/>
+            </div>
+            <div class="chk">
+                <input id="save" type="checkbox" checked/>
+                <label for="save" style="margin:0">зберегти в БД</label>
+            </div>
+            <div class="actions">
+                <button class="btn primary" onclick="search()">Пошук</button>
+                <button class="btn ghost" onclick="refreshDb()">Оновити з БД</button>
+                <button class="btn danger" onclick="clearDb()">Очистити БД</button>
+            </div>
+        </div>
+        <div class="note">
+            Параметр <b>q</b> напряму впливає на відповідь YouTube API. Приклади: <i>dotnet conf</i>, <i>lofi</i>,
+            <i>c# tutorial</i>, <i>football highlights</i>.
+            <span id="status" class="status">—</span>
+        </div>
+    </div>
+
+    <div class="grid">
+        <div class="card">
+            <h2>Результат API</h2>
+            <div class="table-wrap">
+                <table id="apiTbl">
+                    <!-- пропорції колонок зроблені ширшими та виразнішими -->
+                    <colgroup>
+                        <col style="width:18%">
+                        <col style="width:40%">
+                        <col style="width:24%">
+                        <col style="width:12%">
+                        <col style="width:6%">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th>VideoId</th>
+                        <th>Title</th>
+                        <th>Channel</th>
+                        <th>PublishedAt</th>
+                        <th>Open</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="empty">
+                        <td colspan="5">Немає даних — виконайте пошук.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Що в БД</h2>
+            <div class="table-wrap">
+                <table id="dbTbl">
+                    <colgroup>
+                        <col style="width:7%">
+                        <col style="width:16%">
+                        <col style="width:18%">
+                        <col style="width:32%">
+                        <col style="width:15%">
+                        <col style="width:8%">
+                        <col style="width:4%">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Query</th>
+                        <th>VideoId</th>
+                        <th>Title</th>
+                        <th>Channel</th>
+                        <th>PublishedAt</th>
+                        <th>Open</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="empty">
+                        <td colspan="7">Немає записів — спробуйте «Оновити з БД».</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const statusEl = document.getElementById('status');
+
+    function setStatus(msg, ok = false) {
+        statusEl.textContent = msg;
+        statusEl.className = 'status ' + (ok ? 'ok' : 'err');
+    }
+
+    function clearStatus() {
+        statusEl.textContent = '—';
+        statusEl.className = 'status';
+    }
+
+    function clamp(v, min, max) {
+        return Math.max(min, Math.min(max, v));
+    }
+
+    function safe(s) {
+        return (s ?? '').toString().replace(/[&<>\"']/g, m => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        }[m]));
+    }
+
+    async function search() {
+        clearStatus();
+        const q = document.getElementById('q').value.trim();
+        const max = clamp(+document.getElementById('max').value || 10, 1, 50);
+        const save = document.getElementById('save').checked;
+        if (!q) {
+            setStatus('Введіть значення q.', false);
+            return;
+        }
+
+        try {
+            const url = `/search?q=${encodeURIComponent(q)}&maxResults=${max}&save=${save}`;
+            const r = await fetch(url);
+            if (!r.ok) throw new Error(`HTTP ${r.status}`);
+            const data = await r.json();
+            renderApi(data.items ?? [], data.count ?? 0);
+            setStatus(`Отримано ${data.count ?? 0}, збережено ${data.saved ?? 0}`, true);
+            if (save) await refreshDb();
+        } catch (e) {
+            console.error(e);
+            setStatus('Помилка пошуку: ' + e.message, false);
+        }
+    }
+
+    async function refreshDb() {
+        clearStatus();
+        try {
+            const r = await fetch('/videos');
+            if (!r.ok) throw new Error(`HTTP ${r.status}`);
+            const data = await r.json();
+            renderDb(data ?? []);
+            setStatus(`У БД записів: ${data?.length ?? 0}`, true);
+        } catch (e) {
+            console.error(e);
+            setStatus('Помилка завантаження з БД: ' + e.message, false);
+        }
+    }
+
+    async function clearDb() {
+        if (!confirm('Очистити БД?')) return;
+        clearStatus();
+        try {
+            const r = await fetch('/videos', {method: 'DELETE'});
+            if (!r.ok) throw new Error(`HTTP ${r.status}`);
+            renderDb([]);
+            setStatus('БД очищено', true);
+        } catch (e) {
+            console.error(e);
+            setStatus('Помилка очистки БД: ' + e.message, false);
+        }
+    }
+
+    function renderApi(items) {
+        const tbody = document.querySelector('#apiTbl tbody');
+        tbody.innerHTML = '';
+        if (items.length === 0) {
+            tbody.innerHTML = `<tr class="empty"><td colspan="5">Нічого не знайдено.</td></tr>`;
+            return;
+        }
+        for (const v of items) {
+            const tr = document.createElement('tr');
+            tr.innerHTML =
+                `<td>${safe(v.videoId)}</td>
+                 <td>${safe(v.title)}</td>
+                 <td>${safe(v.channelTitle)}</td>
+                 <td>${safe(v.publishedAt)}</td>
+                 <td><a class="link" href="https://youtu.be/${safe(v.videoId)}" target="_blank" rel="noopener">open</a></td>`;
+            tbody.appendChild(tr);
+        }
+    }
+
+    function renderDb(items) {
+        const tbody = document.querySelector('#dbTbl tbody');
+        tbody.innerHTML = '';
+        if (items.length === 0) {
+            tbody.innerHTML = `<tr class="empty"><td colspan="7">У БД немає записів.</td></tr>`;
+            return;
+        }
+        for (const v of items) {
+            const tr = document.createElement('tr');
+            tr.innerHTML =
+                `<td>${v.id}</td>
+                 <td>${safe(v.query)}</td>
+                 <td>${safe(v.videoId)}</td>
+                 <td>${safe(v.title)}</td>
+                 <td>${safe(v.channelTitle)}</td>
+                 <td>${safe(v.publishedAt)}</td>
+                 <td><a class="link" href="https://youtu.be/${safe(v.videoId)}" target="_blank" rel="noopener">open</a></td>`;
+            tbody.appendChild(tr);
+        }
+    }
+
+    document.getElementById('q').addEventListener('keydown', e => {
+        if (e.key === 'Enter') search();
+    });
+    window.addEventListener('load', () => {
+        refreshDb();
+    });
+</script>
+</body>
+</html>
